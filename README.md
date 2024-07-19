@@ -30,6 +30,7 @@ docker build -t cobbler:2.8.5 .
  #指定web账户密码
 
  COBBLER_WEB_USER=xxxxx
+ 
  COBBLER_WEB_PASSWD=xxxxx
 
 ## 容器
