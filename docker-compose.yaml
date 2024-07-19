@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+
+  cobbler:
+    image: cobbler:2.8.5
+    restart: always
+    container_name: cobbler
+    volumes:
+      - /mnt/distros:/mnt:ro
+      - www:/var/www/cobbler:Z
+      - tftp:/var/lib/tftpboot:Z
+      - config:/var/lib/cobbler/config:Z
+      - collections:/var/lib/cobbler/collections:Z
+      - backup:/var/lib/cobbler/backup:Z
+      - /var/log/supervisor:/var/log/supervisor:Z
+    env_file: cobbler.env
+    network_mode: "host"
+
+volumes:
+  www:
+  tftp:
+  config:
+  collections:
+  backup:
