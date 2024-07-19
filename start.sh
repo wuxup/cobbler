@@ -4,7 +4,6 @@ set -ex
 
 ROOT_PASSWD=${ROOT_PASSWD:-cobbler}
 SERVER_IP=${SERVER_IP:-192.168.3.99}
-HOST_HTTP_PORT=${HOST_HTTP_PORT:-80}
 COBBLER_WEB_USER=${COBBLER_WEB_USER:-cobbler}
 COBBLER_WEB_PASSWD=${COBBLER_WEB_PASSWD:-cobbler}
 COBBLER_WEB_REALM=${COBBLER_WEB_REALM:-Cobbler}
@@ -23,7 +22,6 @@ sed -i 's/pxe_just_once: 0/pxe_just_once: 1/g' /etc/cobbler/settings
 sed -i 's/manage_dhcp: 0/manage_dhcp: 1/g' /etc/cobbler/settings
 sed -i 's/manage_rsync: 0/manage_rsync: 1/g' /etc/cobbler/settings
 sed -i "s#^default_password.*#default_password_crypted: \"$PASSWORD\"#g" /etc/cobbler/settings
-sed -i -e "/^http_port:/ s/:.*$/: ${HOST_HTTP_PORT}/" /etc/cobbler/settings
 sed -i "s/192.168.1.0/$DHCP_SUBNET/" /etc/cobbler/dhcp.template
 sed -i "s/192.168.1.5/$DHCP_ROUTER/" /etc/cobbler/dhcp.template
 sed -i "s/192.168.1.1;/$DHCP_DNS;/" /etc/cobbler/dhcp.template
@@ -33,6 +31,12 @@ sed -i "s/service %s restart/supervisorctl restart %s/g" /usr/lib/python2.7/site
 sed -i -e "/disable/ s/yes/no/" /etc/xinetd.d/tftp
 sed -i -e "/^@dists/ s/@dists/#@dists/" /etc/debmirror.conf
 sed -i -e "/^@arches/ s/@arches/#@arches/" /etc/debmirror.conf
+
+if [ $HOST_HTTP_PORT ]
+then
+    sed -i -e "/^http_port:/ s/:.*$/: ${HOST_HTTP_PORT}/" /etc/cobbler/settings
+    sed -i -e "/^Listen/ s/80/${HOST_HTTP_PORT}/" /etc/httpd/conf/httpd.conf
+fi
 
 rm -rf /run/httpd/*
 /usr/sbin/apachectl
